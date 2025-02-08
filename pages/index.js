@@ -1,5 +1,8 @@
 import { useState } from 'react';
 
+// 環境変数からAPIのベースURLを取得（ローカル or Azure）
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://tech0-gen8-step4-pos-app-68.azurewebsites.net";
+
 export default function POSApp() {
   const [productCode, setProductCode] = useState('');
   const [product, setProduct] = useState(null);
@@ -8,19 +11,19 @@ export default function POSApp() {
 
   const handleSearch = async () => {
     try {
-        const response = await fetch('http://127.0.0.1:8000/products/search', { // ← カンマを正しく修正
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: productCode }),
-        });
-        if (!response.ok) throw new Error('Product not found');
-        const data = await response.json();
-        setProduct(data);
+      const response = await fetch(`${API_BASE_URL}/products/search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: productCode }),
+      });
+      if (!response.ok) throw new Error('Product not found');
+      const data = await response.json();
+      setProduct(data);
     } catch (error) {
-        alert(error.message);
-        setProduct(null);
+      alert(error.message);
+      setProduct(null);
     }
-};
+  };
 
   const addToCart = () => {
     if (product) {
@@ -37,7 +40,7 @@ export default function POSApp() {
       const productIds = cart.map((item) => item.id);
       const quantities = cart.map((item) => item.quantity);
 
-      const response = await fetch('/transactions', {
+      const response = await fetch(`${API_BASE_URL}/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ product_ids: productIds, quantities }),
