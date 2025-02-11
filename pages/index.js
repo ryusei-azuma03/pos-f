@@ -14,8 +14,8 @@ export default function POSApp() {
       const response = await fetch(`${API_BASE_URL}/products/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: productCode }),
-      });
+        mode: "cors", 
+      });      
       if (!response.ok) throw new Error('Product not found');
       const data = await response.json();
       setProduct(data);
